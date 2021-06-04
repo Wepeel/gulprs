@@ -19,9 +19,9 @@ impl<Type: Unpin> std::stream::Stream for GulpStream<Type> {
         self: std::pin::Pin<&mut Self>,
         _: &mut std::task::Context<'_>,
     ) -> std::task::Poll<std::option::Option<<Self as std::stream::Stream>::Item>> {
-        if self.queue.is_empty() {
-            return Poll::Pending;
+        match self.get_mut().queue.pop_back() {
+            Some(value) => Poll::Ready(Some(value)),
+            None => Poll::Pending,
         }
-        return Poll::Ready(self.get_mut().queue.pop_back());
     }
 }
